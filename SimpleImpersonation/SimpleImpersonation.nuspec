@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>SimpleImpersonation</id>
+    <version>$version$</version>
+    <title>Simple Impersonation Library</title>
+    <authors>$author$</authors>
+    <description>$description$</description>
+    <language>en-US</language>
+    <licenseUrl>https://raw.github.com/mj1856/SimpleImpersonation/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/mj1856/SimpleImpersonation</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>impersonation user password domain logonuser win32</tags>
+  </metadata>
+  <files>
+    <file src="bin\debug\SimpleImpersonation.pdb" target="lib\net40-client"/>
+    <file src="..\SimpleImpersonation.Net20\bin\debug\SimpleImpersonation.*" target="lib\net20"/>
+  </files>
+</package>
