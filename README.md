@@ -5,6 +5,8 @@ Simple Impersonation Library for .Net
 
 This library provides a managed wrapper for the [LogonUser](http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx) function of the Win32 API.  Basically, it allows you to impersonate any user, as long as you have their credentials.
 
+It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, and the client profiles.  It has no dependencies.
+
 Installation
 ------------
 
