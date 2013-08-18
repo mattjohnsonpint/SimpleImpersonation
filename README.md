@@ -25,8 +25,13 @@ Usage
 
 Be sure to specify a logon type that makes sense for what you are doing.  For example:
 
-- If you are trying to connect to a SQL server with trusted authentication using specific credentials, use `LogonType.NewCredentials`.
-
 - If you are interactively working as a particular user from a desktop application, use `LogonType.Interactive`.
+
+- If you are trying to connect to a SQL server with trusted authentication using specific credentials, use `LogonType.NewCredentials`.
+  - But be aware that impersonation is not taken into account in connection pooling.
+  - You will also need to vary your connection string.
+  - Read more [here](http://stackoverflow.com/q/18198291/634824)
+
+
 
 See the [MSDN documentation](http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx) for additional logon types.
