@@ -1,11 +1,15 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿using System;
+using Microsoft.Win32.SafeHandles;
 
 namespace SimpleImpersonation
 {
     internal sealed class SafeTokenHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private SafeTokenHandle()
-            : base(true) { }
+        internal SafeTokenHandle(IntPtr handle)
+            : base(true)
+        {
+            this.handle = handle;
+        }
 
         protected override bool ReleaseHandle()
         {
