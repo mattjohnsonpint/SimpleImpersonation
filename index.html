@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="SimpleImpersonation : Simple Impersonation Library for .Net" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>SimpleImpersonation</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mj1856/SimpleImpersonation">View on GitHub</a>
+
+          <h1 id="project_title">SimpleImpersonation</h1>
+          <h2 id="project_tagline">Simple Impersonation Library for .Net</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mj1856/SimpleImpersonation/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mj1856/SimpleImpersonation/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="simpleimpersonation" class="anchor" href="#simpleimpersonation"><span class="octicon octicon-link"></span></a>SimpleImpersonation</h1>
+
+<p>Simple Impersonation Library for .Net</p>
+
+<p>This library provides a managed wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">LogonUser</a> function of the Win32 API.  Basically, it allows you to impersonate any user, as long as you have their credentials.</p>
+
+<p>It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, and the client profiles.  It has no dependencies.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Use NuGet package <a href="https://nuget.org/packages/SimpleImpersonation/">SimpleImpersonation</a>.</p>
+
+<pre><code>PM&gt; Install-Package SimpleImpersonation
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>using (Impersonation.LogonUser(domain, username, password, logonType))
+{
+    // do whatever you want as this user.
+}
+</code></pre>
+
+<p>Be sure to specify a logon type that makes sense for what you are doing.  For example:</p>
+
+<ul>
+<li><p>If you are interactively working as a particular user from a desktop application, use <code>LogonType.Interactive</code>.</p></li>
+<li>
+<p>If you are trying to connect to a SQL server with trusted authentication using specific credentials, use <code>LogonType.NewCredentials</code>.</p>
+
+<ul>
+<li>But be aware that impersonation is not taken into account in connection pooling.</li>
+<li>You will also need to vary your connection string.</li>
+<li>Read more <a href="http://stackoverflow.com/q/18198291/634824">here</a>
+</li>
+</ul>
+</li>
+</ul><p>See the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">MSDN documentation</a> for additional logon types.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">SimpleImpersonation maintained by <a href="https://github.com/mj1856">mj1856</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
