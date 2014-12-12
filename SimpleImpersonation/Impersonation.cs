@@ -5,12 +5,18 @@ using System.Security.Principal;
 
 namespace SimpleImpersonation
 {
+    /// <summary>
+    /// Wrapper for Win32's LogonUser function and the WindowsIdentity function Impersonate.
+    /// </summary>
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public sealed class Impersonation : IDisposable
     {
         private readonly SafeTokenHandle _handle;
         private WindowsImpersonationContext _context;
 
+        /// <summary>
+        /// Creates a new Impersonation object and impersonates the given user.
+        /// </summary>
         public static Impersonation LogonUser(string domain, string username, string password, LogonType logonType)
         {
             var impersonation = new Impersonation(domain, username, password, logonType);
@@ -18,6 +24,9 @@ namespace SimpleImpersonation
             return impersonation;
         }
 
+        /// <summary>
+        /// Creates a new Impersonation object with a login for the given account.
+        /// </summary>
         public Impersonation(string domain, string username, string password, LogonType logonType)
         {
             IntPtr handle;
@@ -32,12 +41,18 @@ namespace SimpleImpersonation
             _context = null;
         }
 
+        /// <summary>
+        /// Disposes of the Impersonation, reverting to the previous user, if necessary.
+        /// </summary>
         public void Dispose()
         {
             Revert();
             _handle.Dispose();
         }
 
+        /// <summary>
+        /// Starts impersonation of the object's account.  If impersonation is already active, nothing happens.
+        /// </summary>
         public void Impersonate()
         {
             if (_context != null) {
@@ -46,6 +61,9 @@ namespace SimpleImpersonation
             _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
         }
 
+        /// <summary>
+        /// Reverts to the previous user, if currently impersonating.
+        /// </summary>
         public void Revert()
         {
             if (_context != null) {
