@@ -9,14 +9,16 @@ namespace SimpleImpersonation
     public sealed class Impersonation : IDisposable
     {
         private readonly SafeTokenHandle _handle;
-        private readonly WindowsImpersonationContext _context;
+        private WindowsImpersonationContext _context;
 
         public static Impersonation LogonUser(string domain, string username, string password, LogonType logonType)
         {
-            return new Impersonation(domain, username, password, logonType);
+            var impersonation = new Impersonation(domain, username, password, logonType);
+            impersonation.Impersonate();
+            return impersonation;
         }
 
-        private Impersonation(string domain, string username, string password, LogonType logonType)
+        public Impersonation(string domain, string username, string password, LogonType logonType)
         {
             IntPtr handle;
             var ok = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out handle);
@@ -27,13 +29,29 @@ namespace SimpleImpersonation
             }
 
             _handle = new SafeTokenHandle(handle);
-            _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
+            _context = null;
         }
 
         public void Dispose()
         {
-            _context.Dispose();
+            Revert();
             _handle.Dispose();
+        }
+
+        public void Impersonate()
+        {
+            if (_context != null) {
+                return;
+            }
+            _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
+        }
+
+        public void Revert()
+        {
+            if (_context != null) {
+                _context.Dispose();
+                _context = null;
+            }
         }
     }
 }
