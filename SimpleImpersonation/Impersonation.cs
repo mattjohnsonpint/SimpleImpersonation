@@ -5,18 +5,29 @@ using System.Security.Principal;
 
 namespace SimpleImpersonation
 {
+    /// <summary>
+    /// Wrapper for Win32's LogonUser function and the WindowsIdentity function Impersonate.
+    /// </summary>
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public sealed class Impersonation : IDisposable
     {
         private readonly SafeTokenHandle _handle;
-        private readonly WindowsImpersonationContext _context;
+        private WindowsImpersonationContext _context;
 
+        /// <summary>
+        /// Creates a new Impersonation object and impersonates the given user.
+        /// </summary>
         public static Impersonation LogonUser(string domain, string username, string password, LogonType logonType)
         {
-            return new Impersonation(domain, username, password, logonType);
+            var impersonation = new Impersonation(domain, username, password, logonType);
+            impersonation.Impersonate();
+            return impersonation;
         }
 
-        private Impersonation(string domain, string username, string password, LogonType logonType)
+        /// <summary>
+        /// Creates a new Impersonation object with a login for the given account.
+        /// </summary>
+        public Impersonation(string domain, string username, string password, LogonType logonType)
         {
             IntPtr handle;
             var ok = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out handle);
@@ -27,13 +38,38 @@ namespace SimpleImpersonation
             }
 
             _handle = new SafeTokenHandle(handle);
+            _context = null;
+        }
+
+        /// <summary>
+        /// Disposes of the Impersonation, reverting to the previous user, if necessary.
+        /// </summary>
+        public void Dispose()
+        {
+            Revert();
+            _handle.Dispose();
+        }
+
+        /// <summary>
+        /// Starts impersonation of the object's account.  If impersonation is already active, nothing happens.
+        /// </summary>
+        public void Impersonate()
+        {
+            if (_context != null) {
+                return;
+            }
             _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Reverts to the previous user, if currently impersonating.
+        /// </summary>
+        public void Revert()
         {
-            _context.Dispose();
-            _handle.Dispose();
+            if (_context != null) {
+                _context.Dispose();
+                _context = null;
+            }
         }
     }
 }
