@@ -12,16 +12,19 @@ Installation
 
 Use NuGet package [SimpleImpersonation](https://nuget.org/packages/SimpleImpersonation/).
 
-    PM> Install-Package SimpleImpersonation
-
+```powershell
+PM> Install-Package SimpleImpersonation
+```
 
 Usage
 -----
 
-    using (Impersonation.LogonUser(domain, username, password, logonType))
-    {
-        // do whatever you want as this user.
-    }
+```csharp
+using (Impersonation.LogonUser(domain, username, password, logonType))
+{
+    // do whatever you want as this user.
+}
+```
 
 Be sure to specify a logon type that makes sense for what you are doing.  For example:
 
