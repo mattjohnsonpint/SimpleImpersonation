@@ -2,9 +2,9 @@
 <html>
 
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="SimpleImpersonation : Simple Impersonation Library for .Net" />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="SimpleImpersonation : Simple Impersonation Library for .Net">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -32,7 +32,7 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="simpleimpersonation" class="anchor" href="#simpleimpersonation"><span class="octicon octicon-link"></span></a>SimpleImpersonation</h1>
+<a id="simpleimpersonation" class="anchor" href="#simpleimpersonation" aria-hidden="true"><span class="octicon octicon-link"></span></a>SimpleImpersonation</h1>
 
 <p>Simple Impersonation Library for .Net</p>
 
@@ -41,21 +41,19 @@
 <p>It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, and the client profiles.  It has no dependencies.</p>
 
 <h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Use NuGet package <a href="https://nuget.org/packages/SimpleImpersonation/">SimpleImpersonation</a>.</p>
 
-<pre><code>PM&gt; Install-Package SimpleImpersonation
-</code></pre>
+<div class="highlight highlight-powershell"><pre>PM<span class="pl-k">&gt;</span> <span class="pl-c1">Install-Package</span> SimpleImpersonation</pre></div>
 
 <h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<pre><code>using (Impersonation.LogonUser(domain, username, password, logonType))
+<div class="highlight highlight-csharp"><pre><span class="pl-k">using</span> (Impersonation.LogonUser(domain, username, password, logonType))
 {
-    // do whatever you want as this user.
-}
-</code></pre>
+    <span class="pl-c">// do whatever you want as this user.</span>
+}</pre></div>
 
 <p>Be sure to specify a logon type that makes sense for what you are doing.  For example:</p>
 
@@ -71,7 +69,9 @@
 </li>
 </ul>
 </li>
-</ul><p>See the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">MSDN documentation</a> for additional logon types.</p>
+</ul>
+
+<p>See the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">MSDN documentation</a> for additional logon types.</p>
       </section>
     </div>
 
@@ -79,7 +79,7 @@
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">SimpleImpersonation maintained by <a href="https://github.com/mj1856">mj1856</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
