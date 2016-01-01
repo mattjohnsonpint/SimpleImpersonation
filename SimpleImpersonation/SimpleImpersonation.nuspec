@@ -13,7 +13,6 @@
     <tags>impersonation user password domain logonuser win32</tags>
   </metadata>
   <files>
-    <file src="bin\debug\SimpleImpersonation.pdb" target="lib\net40-client"/>
-    <file src="..\SimpleImpersonation.Net20\bin\debug\SimpleImpersonation.*" target="lib\net20"/>
+    <file src="..\SimpleImpersonation.Net20\bin\$configuration$\SimpleImpersonation.*" target="lib\net20"/>
   </files>
 </package>
