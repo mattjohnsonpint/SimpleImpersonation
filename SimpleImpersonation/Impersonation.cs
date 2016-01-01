@@ -22,22 +22,6 @@ namespace SimpleImpersonation
             return new Impersonation(domain, username, password, logonType);
         }
 
-        private void CompleteImpersonation(bool ok, IntPtr handle)
-        {
-            if (!ok)
-            {
-                var errorCode = Marshal.GetLastWin32Error();
-
-                if (handle != IntPtr.Zero)
-                   NativeMethods.CloseHandle(handle);
-
-                throw new ApplicationException(string.Format("Could not impersonate the elevated user.  LogonUser returned error code {0}.", errorCode));
-            }
-
-            _handle = new SafeTokenHandle(handle);
-            _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
-        }
-
         private Impersonation(string domain, string username, SecureString password, LogonType logonType)
         {
             IntPtr handle;
@@ -60,6 +44,22 @@ namespace SimpleImpersonation
             IntPtr handle;
             var ok = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out handle);
             CompleteImpersonation(ok, handle);
+        }
+
+        private void CompleteImpersonation(bool ok, IntPtr handle)
+        {
+            if (!ok)
+            {
+                var errorCode = Marshal.GetLastWin32Error();
+
+                if (handle != IntPtr.Zero)
+                    NativeMethods.CloseHandle(handle);
+
+                throw new ApplicationException(string.Format("Could not impersonate the elevated user.  LogonUser returned error code {0}.", errorCode));
+            }
+
+            _handle = new SafeTokenHandle(handle);
+            _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
         }
 
         public void Dispose()
