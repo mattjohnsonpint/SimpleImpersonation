@@ -9,8 +9,8 @@ namespace SimpleImpersonation
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public sealed class Impersonation : IDisposable
     {
-        private SafeTokenHandle _handle;
-        private WindowsImpersonationContext _context;
+        private readonly SafeTokenHandle _handle;
+        private readonly WindowsImpersonationContext _context;
 
         public static Impersonation LogonUser(string domain, string username, string password, LogonType logonType)
         {
@@ -24,42 +24,45 @@ namespace SimpleImpersonation
 
         private Impersonation(string domain, string username, SecureString password, LogonType logonType)
         {
-            IntPtr handle;
-            var passPtr = Marshal.SecureStringToGlobalAllocUnicode(password);
-            bool ok;
+            IntPtr token;
+            IntPtr passPtr = Marshal.SecureStringToGlobalAllocUnicode(password);
+
+            bool success;
             try
             {
-                ok = NativeMethods.LogonUser(username, domain, passPtr, (int)logonType, 0, out handle);
+                success = NativeMethods.LogonUser(username, domain, passPtr, (int)logonType, 0, out token);
             }
             finally
             {
                 Marshal.ZeroFreeGlobalAllocUnicode(passPtr);
             }
 
-            CompleteImpersonation(ok, handle);
+            CompleteImpersonation(success, token, out _handle, out _context);
         }
 
         private Impersonation(string domain, string username, string password, LogonType logonType)
         {
-            IntPtr handle;
-            var ok = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out handle);
-            CompleteImpersonation(ok, handle);
+            IntPtr token;
+            bool success = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out token);
+            CompleteImpersonation(success, token, out _handle, out _context);
         }
 
-        private void CompleteImpersonation(bool ok, IntPtr handle)
+        private void CompleteImpersonation(bool success, IntPtr token, out SafeTokenHandle handle, out WindowsImpersonationContext context)
         {
-            if (!ok)
+            if (!success)
             {
                 var errorCode = Marshal.GetLastWin32Error();
 
-                if (handle != IntPtr.Zero)
-                    NativeMethods.CloseHandle(handle);
+                if (token != IntPtr.Zero)
+                {
+                    NativeMethods.CloseHandle(token);
+                }
 
                 throw new ApplicationException(string.Format("Could not impersonate the elevated user.  LogonUser returned error code {0}.", errorCode));
             }
 
-            _handle = new SafeTokenHandle(handle);
-            _context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
+            handle = new SafeTokenHandle(token);
+            context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
         }
 
         public void Dispose()
