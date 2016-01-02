@@ -1,59 +1,51 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="SimpleImpersonation : Simple Impersonation Library for .Net">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>SimpleImpersonation</title>
+    <meta charset="UTF-8">
+    <title>SimpleImpersonation by mj1856</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">SimpleImpersonation</h1>
+      <h2 class="project-tagline">Simple Impersonation Library for .Net</h2>
+      <a href="https://github.com/mj1856/SimpleImpersonation" class="btn">View on GitHub</a>
+      <a href="https://github.com/mj1856/SimpleImpersonation/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/mj1856/SimpleImpersonation/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/mj1856/SimpleImpersonation">View on GitHub</a>
-
-          <h1 id="project_title">SimpleImpersonation</h1>
-          <h2 id="project_tagline">Simple Impersonation Library for .Net</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/mj1856/SimpleImpersonation/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/mj1856/SimpleImpersonation/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <section class="main-content">
+      <h1>
 <a id="simpleimpersonation" class="anchor" href="#simpleimpersonation" aria-hidden="true"><span class="octicon octicon-link"></span></a>SimpleImpersonation</h1>
 
 <p>Simple Impersonation Library for .Net</p>
 
 <p>This library provides a managed wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">LogonUser</a> function of the Win32 API.  Basically, it allows you to impersonate any user, as long as you have their credentials.</p>
 
-<p>It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, and the client profiles.  It has no dependencies.</p>
+<p>It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, 4.5.1, 4.5.2, 4.6, and the 4.0 client profiles.  It has no dependencies.</p>
+
+<p>Note that it is <em>not</em> compiled for PCL or .NET Core, as it is Windows specific.</p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Use NuGet package <a href="https://nuget.org/packages/SimpleImpersonation/">SimpleImpersonation</a>.</p>
 
-<div class="highlight highlight-powershell"><pre>PM<span class="pl-k">&gt;</span> <span class="pl-c1">Install-Package</span> SimpleImpersonation</pre></div>
+<div class="highlight highlight-source-powershell"><pre>PM<span class="pl-k">&gt;</span> <span class="pl-c1">Install-Package</span> SimpleImpersonation</pre></div>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<div class="highlight highlight-csharp"><pre><span class="pl-k">using</span> (Impersonation.LogonUser(domain, username, password, logonType))
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">using</span> (Impersonation.LogonUser(domain, username, password, logonType))
 {
     <span class="pl-c">// do whatever you want as this user.</span>
 }</pre></div>
+
+<p>Note: As of version 1.1.0, <code>password</code> can be specified as a <code>SecureString</code>.  You can still pass a regular <code>string</code> if desired, however <code>SecureString</code> is recommended.</p>
 
 <p>Be sure to specify a logon type that makes sense for what you are doing.  For example:</p>
 
@@ -71,19 +63,16 @@
 </li>
 </ul>
 
-<p>See the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx">MSDN documentation</a> for additional logon types.</p>
-      </section>
-    </div>
+<p>See the <a href="http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx">MSDN documentation</a> for additional logon types.</p>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">SimpleImpersonation maintained by <a href="https://github.com/mj1856">mj1856</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/mj1856/SimpleImpersonation">SimpleImpersonation</a> is maintained by <a href="https://github.com/mj1856">mj1856</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
