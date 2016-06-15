@@ -35,6 +35,9 @@
     <Compile Include="..\SimpleImpersonation\Impersonation.cs">
       <Link>Impersonation.cs</Link>
     </Compile>
+    <Compile Include="..\SimpleImpersonation\ImpersonationException.cs">
+      <Link>ImpersonationException.cs</Link>
+    </Compile>
     <Compile Include="..\SimpleImpersonation\LogonType.cs">
       <Link>LogonType.cs</Link>
     </Compile>

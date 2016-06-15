@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -81,7 +82,7 @@ namespace SimpleImpersonation
                     NativeMethods.CloseHandle(token);
                 }
 
-                throw new ApplicationException(string.Format("Could not impersonate the elevated user.  LogonUser returned error code {0}.", errorCode));
+                throw new ImpersonationException(new Win32Exception(errorCode));
             }
 
             handle = new SafeTokenHandle(token);
