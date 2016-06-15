@@ -22,8 +22,13 @@ namespace SimpleImpersonation
         }
 
         /// <summary>
-        /// Returns the Win32 Error Code for the exception.
+        /// Returns the Win32 error code handle for the exception.
         /// </summary>
         public int ErrorCode => ((Win32Exception)InnerException).ErrorCode;
+
+        /// <summary>
+        /// Returns the Win32 native error code for the exception.
+        /// </summary>
+        public int NativeErrorCode => ((Win32Exception)InnerException).NativeErrorCode;
     }
 }
