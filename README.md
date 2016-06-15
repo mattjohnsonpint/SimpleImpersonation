@@ -40,10 +40,11 @@ Be sure to specify a logon type that makes sense for what you are doing.  For ex
   - Read more [here](http://stackoverflow.com/q/18198291/634824)
 
 - If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
-  - `ErrorCode` : The Win32 error code returned from the `LogonUser` function.
-  - `Message` : The string message describing the error, as given by the Windows `FormatMessage` function.
-  - `InnerException` : A `Win32Exception` based on the error code, used to derive the message.
-
+  - `Message` : The string message describing the error.  
+  - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
+  - `ErrorCode` : The `HResult` of the error.
+  - `InnerException` : A `Win32Exception` used to derive the other properties.
+  
   *Note that it derives from `ApplicationException` for better compatibility with previous versions of this library.*
 
 See the [MSDN documentation](http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx) for additional logon types.
@@ -66,3 +67,7 @@ Changelog
 2.0.0
 
 - Issue #14 - Throws a more useful exception.  (This is a breaking change if you were previously parsing the error code out of the message string).
+
+2.0.1
+
+- Issue #17 - Adds the `NativeError` code to the exception.
