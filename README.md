@@ -1,4 +1,4 @@
-SimpleImpersonation
+SimpleImpersonation  [![NuGet Version](https://img.shields.io/nuget/v/SimpleImpersonation.svg?style=flat)](https://www.nuget.org/packages/SimpleImpersonation/) 
 ===================
 
 Simple Impersonation Library for .Net
