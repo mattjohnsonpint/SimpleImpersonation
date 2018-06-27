@@ -90,6 +90,14 @@ namespace SimpleImpersonation
         }
 
         /// <summary>
+        /// token that represents the specified user
+        /// </summary>
+        public SafeTokenHandle Handle
+        {
+            get { return _handle; }
+        }
+
+        /// <summary>
         /// Disposes the <see cref="Impersonation"/> object, ending impersonation and restoring the original user.
         /// </summary>
         public void Dispose()
