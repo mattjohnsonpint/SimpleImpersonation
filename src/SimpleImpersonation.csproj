@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A tiny library that lets you impersonate any user, by acting as a managed wrapper for the LogonUser Win32 function.</Description>
+    <Authors>Matt Johnson</Authors>
+    <TargetFrameworks>net45;net40;net35;net20</TargetFrameworks>
+    <PackageId>SimpleImpersonation</PackageId>
+    <PackageTags>impersonation user password domain logonuser win32</PackageTags>
+    <PackageProjectUrl>https://github.com/mj1856/SimpleImpersonation</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.github.com/mj1856/SimpleImpersonation/master/LICENSE.txt</PackageLicenseUrl>
+    <IncludeSource>True</IncludeSource>
+    <IncludeSymbols>True</IncludeSymbols>
+    <Version>2.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\SimpleImpersonation.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>
