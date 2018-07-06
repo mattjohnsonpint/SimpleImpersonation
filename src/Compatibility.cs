@@ -3,6 +3,9 @@ using System;
 
 namespace Microsoft.Win32.SafeHandles
 {
+    /// <summary>
+    /// Provides safe access to a token handle.
+    /// </summary>
     public sealed class SafeAccessTokenHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         internal SafeAccessTokenHandle(IntPtr handle)
