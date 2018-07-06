@@ -25,4 +25,12 @@
     <PackageReference Include="System.Security.Principal.Windows" Version="4.5.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net20'">$(SystemRoot)\Microsoft.NET\Framework\v2.0.50727</FrameworkPathOverride>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net35'">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
+  </PropertyGroup>
+
 </Project>
