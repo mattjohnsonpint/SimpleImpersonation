@@ -11,6 +11,8 @@ namespace SimpleImpersonation
     /// </remarks>
     public class ImpersonationException : ApplicationException
     {
+        private readonly Win32Exception _win32Exception;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImpersonationException"/> class from a specific <see cref="Win32Exception"/>.
         /// </summary>
@@ -19,16 +21,18 @@ namespace SimpleImpersonation
             : base(win32Exception.Message, win32Exception)
         {
             // Note that the Message is generated inside the Win32Exception class via the Win32 FormatMessage function.
+
+            _win32Exception = win32Exception;
         }
 
         /// <summary>
         /// Returns the Win32 error code handle for the exception.
         /// </summary>
-        public int ErrorCode => ((Win32Exception)InnerException).ErrorCode;
+        public int ErrorCode => _win32Exception.ErrorCode;
 
         /// <summary>
         /// Returns the Win32 native error code for the exception.
         /// </summary>
-        public int NativeErrorCode => ((Win32Exception)InnerException).NativeErrorCode;
+        public int NativeErrorCode => _win32Exception.NativeErrorCode;
     }
 }

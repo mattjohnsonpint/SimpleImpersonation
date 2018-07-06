@@ -1,109 +1,103 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 using System.Security.Principal;
+using Microsoft.Win32.SafeHandles;
+
+#if !NETSTANDARD
+using System.Security.Permissions;
+#endif
 
 namespace SimpleImpersonation
 {
     /// <summary>
-    /// Impersonates a specific user for the lifetime of this object.
+    /// Provides ability to run code within the context of a specific user.
     /// </summary>
+#if !NETSTANDARD
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-    public sealed class Impersonation : IDisposable
+#endif
+    public static class Impersonation
     {
-        private readonly SafeTokenHandle _handle;
-        private readonly WindowsImpersonationContext _context;
-
         /// <summary>
-        /// Attempts to impersonate the user with the supplied information.
-        /// Call from a <c>using</c> block, or ensure that <see cref="Dispose"/> is called on
-        /// the resulting <see cref="Impersonation"/> object upon completion.
+        /// Impersonates a specific user account to perform the specified action.
         /// </summary>
-        /// <param name="domain">The domain name or machine name, or <c>.</c> for the local machine.</param>
-        /// <param name="username">The user name.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="logonType">The logon type.</param>
-        /// <returns>An <see cref="Impersonation"/> object, which should be disposed when done impersonating the user.</returns>
-        public static Impersonation LogonUser(string domain, string username, string password, LogonType logonType)
+        /// <param name="credentials">The credentials of the user account to impersonate.</param>
+        /// <param name="logonType">The logon type used when impersonating the user account.</param>
+        /// <param name="action">The action to perform.</param>
+        public static void RunAsUser(UserCredentials credentials, LogonType logonType, Action action)
         {
-            return new Impersonation(domain, username, password, logonType);
-        }
-
-        /// <summary>
-        /// Attempts to impersonate the user with the supplied information.
-        /// Call from a <c>using</c> block, or ensure that <see cref="Dispose"/> is called on
-        /// the resulting <see cref="Impersonation"/> object upon completion.
-        /// </summary>
-        /// <param name="domain">The domain name or machine name, or <c>.</c> for the local machine.</param>
-        /// <param name="username">The user name.</param>
-        /// <param name="password">The password, as a <see cref="SecureString"/>.</param>
-        /// <param name="logonType">The logon type.</param>
-        /// <returns>An <see cref="Impersonation"/> object, which should be disposed when done impersonating the user.</returns>
-        public static Impersonation LogonUser(string domain, string username, SecureString password, LogonType logonType)
-        {
-            return new Impersonation(domain, username, password, logonType);
-        }
-
-        private Impersonation(string domain, string username, SecureString password, LogonType logonType)
-        {
-            IntPtr token;
-            IntPtr passPtr = Marshal.SecureStringToGlobalAllocUnicode(password);
-
-            bool success;
-            try
+            using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                success = NativeMethods.LogonUser(username, domain, passPtr, (int)logonType, 0, out token);
+                RunImpersonated(tokenHandle, _ => action());
             }
-            finally
-            {
-                Marshal.ZeroFreeGlobalAllocUnicode(passPtr);
-            }
-
-            CompleteImpersonation(success, token, out _handle, out _context);
-        }
-
-        private Impersonation(string domain, string username, string password, LogonType logonType)
-        {
-            IntPtr token;
-            bool success = NativeMethods.LogonUser(username, domain, password, (int)logonType, 0, out token);
-            CompleteImpersonation(success, token, out _handle, out _context);
-        }
-
-        private void CompleteImpersonation(bool success, IntPtr token, out SafeTokenHandle handle, out WindowsImpersonationContext context)
-        {
-            if (!success)
-            {
-                var errorCode = Marshal.GetLastWin32Error();
-
-                if (token != IntPtr.Zero)
-                {
-                    NativeMethods.CloseHandle(token);
-                }
-
-                throw new ImpersonationException(new Win32Exception(errorCode));
-            }
-
-            handle = new SafeTokenHandle(token);
-            context = WindowsIdentity.Impersonate(_handle.DangerousGetHandle());
         }
 
         /// <summary>
-        /// token that represents the specified user
+        /// Impersonates a specific user account to perform the specified action.
         /// </summary>
-        public SafeTokenHandle Handle
+        /// <param name="credentials">The credentials of the user account to impersonate.</param>
+        /// <param name="logonType">The logon type used when impersonating the user account.</param>
+        /// <param name="action">The action to perform, which accepts a <see cref="SafeAccessTokenHandle"/> to the user account as its only parameter.</param>
+        public static void RunAsUser(UserCredentials credentials, LogonType logonType, Action<SafeAccessTokenHandle> action)
         {
-            get { return _handle; }
+            using (var tokenHandle = credentials.Impersonate(logonType))
+            {
+                RunImpersonated(tokenHandle, action);
+            }
         }
 
         /// <summary>
-        /// Disposes the <see cref="Impersonation"/> object, ending impersonation and restoring the original user.
+        /// Impersonates a specific user account to execute the specified function.
         /// </summary>
-        public void Dispose()
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <param name="credentials">The credentials of the user account to impersonate.</param>
+        /// <param name="logonType">The logon type used when impersonating the user account.</param>
+        /// <param name="function">The function to execute, which accepts a <see cref="SafeAccessTokenHandle"/> to the user account as its only parameter.</param>
+        /// <returns>The result of executing the function.</returns>
+        public static T RunAsUser<T>(UserCredentials credentials, LogonType logonType, Func<T> function)
         {
-            _context.Dispose();
-            _handle.Dispose();
+            using (var tokenHandle = credentials.Impersonate(logonType))
+            {
+                return RunImpersonated(tokenHandle, _ => function());
+            }
+        }
+
+        /// <summary>
+        /// Impersonates a specific user account to execute the specified function.
+        /// </summary>
+        /// <typeparam name="T">The return type of the function.</typeparam>
+        /// <param name="credentials">The credentials of the user account to impersonate.</param>
+        /// <param name="logonType">The logon type used when impersonating the user account.</param>
+        /// <param name="function">The function to execute.</param>
+        /// <returns>The result of executing the function.</returns>
+        public static T RunAsUser<T>(UserCredentials credentials, LogonType logonType, Func<SafeAccessTokenHandle, T> function)
+        {
+            using (var tokenHandle = credentials.Impersonate(logonType))
+            {
+                return RunImpersonated(tokenHandle, function);
+            }
+        }
+
+        private static void RunImpersonated(SafeAccessTokenHandle tokenHandle, Action<SafeAccessTokenHandle> action)
+        {
+#if NETSTANDARD || NET46
+            WindowsIdentity.RunImpersonated(tokenHandle, () => action(tokenHandle));
+#else
+            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
+            {
+                action(tokenHandle);
+            }
+#endif
+        }
+
+        private static T RunImpersonated<T>(SafeAccessTokenHandle tokenHandle, Func<SafeAccessTokenHandle, T> function)
+        {
+#if NETSTANDARD || NET46
+            return WindowsIdentity.RunImpersonated(tokenHandle, () => function(tokenHandle));
+#else
+            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
+            {
+                return function(tokenHandle);
+            }
+#endif
         }
     }
 }
