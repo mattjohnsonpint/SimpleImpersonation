@@ -25,6 +25,8 @@ Since this library relies on Windows APIs, it is Windows only.
 
 ## Usage
 
+*Note this API is new for version 3.0.0 and varies significantly from previous versions.*
+
 ```csharp
 var credentials = new UserCredentials(domain, username, password);
 Impersonation.RunAsUser(credentials, logonType, () =>
