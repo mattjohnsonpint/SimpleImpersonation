@@ -17,6 +17,12 @@ This library is multi-targeted, and should work well with all of the following:
   - .NET Framework 2.0, 3.5, 4.0, 4.5, 4.6, and greater
   - Any implementation of .NET Standard 2.0, including .NET Core 2.0 or greater
 
+## Platform Support
+
+Since this library relies on Windows APIs, it is Windows only.
+
+(Linux and Mac support would be gladly accepted as pull requests from an ambitious contributor!)
+
 ## Usage
 
 ```csharp
