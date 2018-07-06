@@ -3,51 +3,68 @@ SimpleImpersonation  [![NuGet Version](https://img.shields.io/nuget/v/SimpleImpe
 
 Simple Impersonation Library for .Net
 
-This library provides a managed wrapper for the [LogonUser](http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx) function of the Win32 API.  Basically, it allows you to impersonate any user, as long as you have their credentials.
+This library allows you to run code as another Windows user, as long as you have their credentials.
 
-It is dual compiled for both .Net 2.0 and .Net 4.0 runtimes.  It should work well under .Net 2.0, 3.0, 3.5, 4.0, 4.5, 4.5.1, 4.5.2, 4.6, 4.6.1, 4.6.2, and the various "client profiles".  It has no dependencies.
+It achives this using the [LogonUser](http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx) Windows API, and thus can only provide the functionality provided by that API.
 
-Note that it is *not* compiled for PCL or .NET Core, as it is Windows specific.
-
-Installation
-------------
-
-Use NuGet package [SimpleImpersonation](https://nuget.org/packages/SimpleImpersonation/).
+## Installation
 
 ```powershell
 PM> Install-Package SimpleImpersonation
 ```
 
-Usage
------
+This library is multi-targeted, and should work well with all of the following:
+  - .NET Framework 2.0, 3.5, 4.0, 4.5, 4.6, and greater
+  - Any implementation of .NET Standard 2.0, including .NET Core 2.0 or greater
+
+## Usage
 
 ```csharp
-using (Impersonation.LogonUser(domain, username, password, logonType))
+var credentials = new UserCredentials(domain, username, password);
+Impersonation.RunAsUser(credentials, logonType, () =>
 {
     // do whatever you want as this user.
-}
+}); 
 ```
 
-The `password` parameter can be specified as a `SecureString`.  You can still pass a regular `string` if desired, however `SecureString` is recommended.
+or
 
-Be sure to specify a logon type that makes sense for what you are doing.  For example:
+```csharp
+var credentials = new UserCredentials(domain, username, password);
+var result = Impersonation.RunAsUser(credentials, logonType, () =>
+{
+    // do whatever you want as this user.
+    return something;
+}); 
+```
 
-- If you are interactively working as a particular user from a desktop application, use `LogonType.Interactive`.
+A few notes:
 
-- If you are trying to connect to a SQL server with trusted authentication using specific credentials, use `LogonType.NewCredentials`.
-  - But be aware that impersonation is not taken into account in connection pooling.
-  - You will also need to vary your connection string.
-  - Read more [here](http://stackoverflow.com/q/18198291/634824)
+- The `domain` parameter can optionally be omitted, in which case the `username` can contain the domain in either `domain\user` or `user@domain` format.
 
-- If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
-  - `Message` : The string message describing the error.  
-  - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
-  - `ErrorCode` : The `HResult` of the error.
-  - `InnerException` : A `Win32Exception` used to derive the other properties.
+- For local computer users, you can either pass the computer's machine name or `.` to the `domain` parameter, or omit the `domain` parameter and just pass the `username` by itself.
+
+- The `password` parameter can be specified as a `SecureString` or a regular `string`.  `SecureString` is recommended when the password is being typed in by a user, but is not appropriate if you already have the password as a regular `string`.
+
+- Be sure to specify a logon type that makes sense for what you are doing.  For example:
+
+  - If you are interactively working as a particular user from a desktop application, use `LogonType.Interactive`.
+
+  - If you are trying to connect to a SQL server with trusted authentication using specific credentials, use `LogonType.NewCredentials`.
+    - But be aware that impersonation is not taken into account in connection pooling.
+    - You will also need to vary your connection string.
+    - Read more [here](http://stackoverflow.com/q/18198291/634824)
+
+  - If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
+    - `Message` : The string message describing the error.  
+    - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
+    - `ErrorCode` : The `HResult` of the error.
+    - `InnerException` : A `Win32Exception` used to derive the other properties.
   
-  *Note that it derives from `ApplicationException` for better compatibility with previous versions of this library.*
+  See the [MSDN documentation](http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx) for additional logon types.
 
-See the [MSDN documentation](http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx) for additional logon types.
+- If you need access to the handle of the user being impersonated, you can gain access to it as an argument to the action or function delegate.  Ex:  `(tokenHandle) => { ... }`
+
 
 Changelog
 ---------
@@ -71,3 +88,9 @@ Changelog
 2.0.1
 
 - Issue #17 - Adds the `NativeError` code to the exception.
+
+3.0.0
+
+- Major changes to the API.  The `LogonUser` method and `IDisposable` pattern are deprecated, in favor of `RunAsUser` that takes an action or function delegate.
+- Uses the built-in `WindowsIdentity.RunImpersonated` and `SafeAccessTokenHandle` APIs in .NET Framework 4.6+ and where available.
+- .NET Standard 2.0 support
