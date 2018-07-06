@@ -3,7 +3,8 @@ using Xunit;
 
 namespace SimpleImpersonation.UnitTests
 {
-    // TODO: user@domain form, test all functions, warn if not elevated
+    // NOTE: Unit tests for this project must be executed as an administrator,
+    //       because they create a temporary user for testing successful impersonation.
 
     public class ImpersonationTests : IClassFixture<UserPrincipalFixture>
     {
