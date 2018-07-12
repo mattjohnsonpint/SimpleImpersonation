@@ -73,6 +73,13 @@ A few notes:
 
 - If you need access to the handle of the user being impersonated, you can gain access to it as an argument to the action or function delegate.  Ex:  `(tokenHandle) => { ... }`
 
+Testing
+-------
+
+In order to verify that this library can impersonate a user, the unit tests will create a temporary user account on the local computer,
+and then delete the account when the test run is complete.  To achieve this, the tests must be run as an elevated "administrator" account.
+
+You can "run as administrator" on a command prompt window and run `dotnet test` on the test project, or you can launch Visual Studio as an administrator and execute the tests from there.
 
 Changelog
 ---------
