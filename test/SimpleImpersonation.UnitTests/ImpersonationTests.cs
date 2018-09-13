@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleImpersonation.UnitTests
@@ -159,6 +162,49 @@ namespace SimpleImpersonation.UnitTests
             Assert.Equal(userNameBefore, userNameAfter);
             Assert.Equal(_fixture.FullUsername, userNameDuring);
             Assert.True(tokenIsValid);
+        }
+
+        [Fact]
+        public async Task Impersonate_RunAsUser_Async()
+        {
+            var userNameBefore = WindowsIdentity.GetCurrent().Name;
+
+            var credentials = new UserCredentials(_fixture.Username, _fixture.Password);
+
+            var rnd = new Random();
+
+            async Task<(string, string, string)> TaskFactory()
+            {
+                var name1 = WindowsIdentity.GetCurrent().Name;
+
+                await Task.Delay(rnd.Next(5, 100));
+
+                var name2 = await Impersonation.RunAsUser(credentials, LogonType.Interactive,
+                    async () =>
+                    {
+                        await Task.Delay(rnd.Next(5, 100));
+                        var name = WindowsIdentity.GetCurrent().Name;
+                        await Task.Delay(rnd.Next(5, 100));
+                        return name;
+                    });
+
+                await Task.Delay(rnd.Next(5, 100));
+
+                var name3 = WindowsIdentity.GetCurrent().Name;
+
+                return (name1, name2, name3);
+            }
+
+            await Task.Delay(500);
+
+            var tasks = Enumerable.Range(1, 50).Select(x => Task.Run(TaskFactory));
+            var userNamesDuring = await Task.WhenAll(tasks);
+
+            Assert.All(userNamesDuring, actual =>
+            {
+                var expected = (userNameBefore, _fixture.FullUsername, userNameBefore);
+                Assert.Equal(expected, actual);
+            });
         }
     }
 }
