@@ -65,13 +65,14 @@ A few notes:
     - You will also need to vary your connection string.
     - Read more [here](http://stackoverflow.com/q/18198291/634824)
 
-  - If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
-    - `Message` : The string message describing the error.  
-    - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
-    - `ErrorCode` : The `HResult` of the error.
-    - `InnerException` : A `Win32Exception` used to derive the other properties.
-  
   See the [MSDN documentation](http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx) for additional logon types.
+
+
+- If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
+  - `Message` : The string message describing the error.  
+  - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
+  - `ErrorCode` : The `HResult` of the error.
+  - `InnerException` : A `Win32Exception` used to derive the other properties.
 
 - If you need access to the handle of the user being impersonated, you can gain access to it as an argument to the action or function delegate.  Ex:  `(tokenHandle) => { ... }`
 
