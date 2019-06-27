@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -17,6 +17,23 @@ namespace SimpleImpersonation
         private readonly SecureString _securePassword;
 
         /// <summary>
+        /// Creates a <see cref="UserCredentials"/> class based on a username that does not require a password.
+        /// The username can contain a domain name if specified in <c>domain\user</c> or <c>user@domain</c> form.
+        /// If no domain is provided, a local computer user account is assumed.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        public UserCredentials(string username)
+        {
+            ValidateUserWithoutDomain(username);
+			ValidateUserWithoutDomainForEmptyPassword(username);
+
+            SplitDomainFromUsername(ref username, out var domain);
+
+            _domain = domain;
+            _username = username;
+        }
+
+        /// <summary>
         /// Creates a <see cref="UserCredentials"/> class based on a username and plaintext password.
         /// The username can contain a domain name if specified in <c>domain\user</c> or <c>user@domain</c> form.
         /// If no domain is provided, a local computer user account is assumed.
@@ -33,6 +50,20 @@ namespace SimpleImpersonation
             _domain = domain;
             _username = username;
             _password = password;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="UserCredentials"/> class based on a domain and username that does not require a password.
+        /// </summary>
+        /// <param name="domain">The domain.</param>
+        /// <param name="username">The username.</param>
+        public UserCredentials(string domain, string username)
+        {
+            ValidateDomainAndUser(domain, username);
+			ValidateDomainAndUserForEmptyPassword(domain, username);
+
+            _domain = domain;
+            _username = username;
         }
 
         /// <summary>
@@ -186,6 +217,38 @@ namespace SimpleImpersonation
             if (password.Length == 0)
                 throw new ArgumentException("Password cannot be empty.", nameof(password));
         }
+        
+		private static void ValidateUserWithoutDomainForEmptyPassword(string username)
+		{
+			if (username.EndsWith(@"$"))
+				return;
+
+			var specialAccounts = new[]
+			{
+				new SecurityIdentifier(WellKnownSidType.LocalServiceSid, null),
+				new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+				new SecurityIdentifier(WellKnownSidType.NetworkServiceSid, null),
+			};
+
+			if (!specialAccounts.Contains(new NTAccount(username).Translate(typeof(SecurityIdentifier))))
+				throw new ArgumentException("Username does not support empty password.", nameof(username));
+		}
+
+		private static void ValidateDomainAndUserForEmptyPassword(string domain, string username)
+		{
+			if (username.EndsWith(@"$"))
+				return;
+
+			var specialAccounts = new[]
+			{
+				new SecurityIdentifier(WellKnownSidType.LocalServiceSid, null),
+				new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+				new SecurityIdentifier(WellKnownSidType.NetworkServiceSid, null),
+			};
+
+			if (!specialAccounts.Contains(new NTAccount(domain, username).Translate(typeof(SecurityIdentifier))))
+				throw new ArgumentException("Username does not support empty password.", nameof(username));
+		}
 
         private static void SplitDomainFromUsername(ref string username, out string domain)
         {
