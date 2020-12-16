@@ -248,6 +248,23 @@ namespace SimpleImpersonation.UnitTests
             });
         }
 
+        [Fact]
+        public void UserCredentials_NetworkService_Valid()
+        {
+            Assert.Equal("NETWORK SERVICE@NT AUTHORITY", UserCredentials.NetworkService.ToString(), ignoreCase: true);
+        }
+
+        [Fact]
+        public void UserCredentials_LocalSystem_Valid()
+        {
+            Assert.Equal("SYSTEM@NT AUTHORITY", UserCredentials.LocalSystem.ToString(), ignoreCase: true);
+        }
+
+        [Fact]
+        public void UserCredentials_LocalService_Valid()
+        {
+            Assert.Equal("LOCAL SERVICE@NT AUTHORITY", UserCredentials.LocalService.ToString(), ignoreCase: true);
+        }
 
         private static SecureString CreateSecureStringPasswordForTesting()
         {

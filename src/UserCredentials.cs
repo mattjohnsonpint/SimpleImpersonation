@@ -17,6 +17,21 @@ namespace SimpleImpersonation
         private readonly SecureString _securePassword;
 
         /// <summary>
+        /// Credentials for "NT AUTHORITY\NETWORK SERVICE"
+        /// </summary>
+        public static UserCredentials NetworkService => new UserCredentials("NETWORK SERVICE");
+
+        /// <summary>
+        /// Credentials for "NT AUTHORITY\SYSTEM"
+        /// </summary>
+        public static UserCredentials LocalSystem => new UserCredentials("SYSTEM");
+
+        /// <summary>
+        /// Credentials for "NT AUTHORITY\LOCAL SERVICE"
+        /// </summary>
+        public static UserCredentials LocalService => new UserCredentials("LOCAL SERVICE");
+
+        /// <summary>
         /// Creates a <see cref="UserCredentials"/> class based on a username and plaintext password.
         /// The username can contain a domain name if specified in <c>domain\user</c> or <c>user@domain</c> form.
         /// If no domain is provided, a local computer user account is assumed.
@@ -84,6 +99,13 @@ namespace SimpleImpersonation
             _domain = domain;
             _username = username;
             _securePassword = password;
+        }
+
+        private UserCredentials(string builtInAccount)
+        {
+            _domain = "NT AUTHORITY";
+            _username = builtInAccount;
+            _password = string.Empty;
         }
 
         internal SafeAccessTokenHandle Impersonate(LogonType logonType)
