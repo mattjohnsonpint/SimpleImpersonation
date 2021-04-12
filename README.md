@@ -114,4 +114,4 @@ Changelog
 - .NET Standard 2.0 support
 
 3.1.0
-- Add 'LowLevelImpersonation' for more fine-grained control over 'SafeAccessTokenHandle'.
+- Add `LowLevelImpersonation` for more fine-grained control over `SafeAccessTokenHandle`.
