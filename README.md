@@ -112,3 +112,6 @@ Changelog
 - Major changes to the API.  The `LogonUser` method and `IDisposable` pattern are deprecated, in favor of `RunAsUser` that takes an action or function delegate.
 - Uses the built-in `WindowsIdentity.RunImpersonated` and `SafeAccessTokenHandle` APIs in .NET Framework 4.6+ and where available.
 - .NET Standard 2.0 support
+
+3.1.0
+- Add 'LowLevelImpersonation' for more fine-grained control over 'SafeAccessTokenHandle'.
