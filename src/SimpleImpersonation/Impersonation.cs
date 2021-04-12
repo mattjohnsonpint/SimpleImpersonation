@@ -15,6 +15,9 @@ namespace SimpleImpersonation
 #endif
     public static class Impersonation
     {
+        /// <summary>
+        /// Provides access to <see cref="LowLevelImpersonation"/> for more fine-grained control.
+        /// </summary>
         public static readonly LowLevelImpersonation LowLevel = new LowLevelImpersonation(); 
         
         /// <summary>

@@ -1,6 +1,6 @@
 extraction:
   csharp:
     index:
-      solution: "src/SimpleImpersonation.csproj"
+      solution: "src/SimpleImpersonation/SimpleImpersonation.csproj"
       dotnet:
         arguments: "-f netstandard2.0"
