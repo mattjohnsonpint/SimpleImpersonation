@@ -18,7 +18,7 @@ namespace SimpleImpersonation
         /// <summary>
         /// Provides access to <see cref="LowLevelImpersonation"/> for more fine-grained control.
         /// </summary>
-        public static readonly LowLevelImpersonation LowLevel = new LowLevelImpersonation(); 
+        public static readonly ILowLevelImpersonation LowLevel = new LowLevelImpersonation(); 
         
         /// <summary>
         /// Impersonates a specific user account to perform the specified action.

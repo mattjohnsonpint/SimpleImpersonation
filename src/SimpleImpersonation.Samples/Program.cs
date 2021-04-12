@@ -11,8 +11,7 @@ namespace SimpleImpersonation.Samples
         private const string Password = "123";
 
         private const LogonType Logon = LogonType.NewCredentials;
-
-
+        
         public static void Main()
         {
             const int maxDegreeOfParallelism = 4;
