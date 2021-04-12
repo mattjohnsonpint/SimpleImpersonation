@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Principal;
 using Microsoft.Win32.SafeHandles;
 
 #if !NETSTANDARD
@@ -16,6 +15,8 @@ namespace SimpleImpersonation
 #endif
     public static class Impersonation
     {
+        public static readonly LowLevelImpersonation LowLevel = new LowLevelImpersonation(); 
+        
         /// <summary>
         /// Impersonates a specific user account to perform the specified action.
         /// </summary>
@@ -26,7 +27,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                RunImpersonated(tokenHandle, _ => action());
+                LowLevel.RunImpersonated(tokenHandle, _ => action());
             }
         }
 
@@ -40,7 +41,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                RunImpersonated(tokenHandle, action);
+                LowLevel.RunImpersonated(tokenHandle, action);
             }
         }
 
@@ -56,7 +57,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                return RunImpersonated(tokenHandle, _ => function());
+                return LowLevel.RunImpersonated(tokenHandle, _ => function());
             }
         }
 
@@ -72,32 +73,8 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                return RunImpersonated(tokenHandle, function);
+                return LowLevel.RunImpersonated(tokenHandle, function);
             }
-        }
-
-        private static void RunImpersonated(SafeAccessTokenHandle tokenHandle, Action<SafeAccessTokenHandle> action)
-        {
-#if NETSTANDARD || NET46
-            WindowsIdentity.RunImpersonated(tokenHandle, () => action(tokenHandle));
-#else
-            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
-            {
-                action(tokenHandle);
-            }
-#endif
-        }
-
-        private static T RunImpersonated<T>(SafeAccessTokenHandle tokenHandle, Func<SafeAccessTokenHandle, T> function)
-        {
-#if NETSTANDARD || NET46
-            return WindowsIdentity.RunImpersonated(tokenHandle, () => function(tokenHandle));
-#else
-            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
-            {
-                return function(tokenHandle);
-            }
-#endif
         }
     }
 }
