@@ -6,8 +6,9 @@
     <TargetFrameworks>netstandard20;net46;net45;net40;net35;net20</TargetFrameworks>
     <PackageId>SimpleImpersonation</PackageId>
     <PackageTags>impersonation user password domain logonuser win32</PackageTags>
-    <PackageProjectUrl>https://github.com/mj1856/SimpleImpersonation</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.github.com/mj1856/SimpleImpersonation/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/mattjohnsonpint/SimpleImpersonation</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/mattjohnsonpint/SimpleImpersonation/master/LICENSE.txt</PackageLicenseUrl>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <Version>3.0.0</Version>
