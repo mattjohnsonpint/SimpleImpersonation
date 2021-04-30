@@ -152,7 +152,7 @@ namespace SimpleImpersonation
                 throw new ArgumentNullException(nameof(username), "Username cannot be null.");
 
             if (domain.Trim() == string.Empty)
-                throw new ArgumentException("Username cannot be empty or consist solely of whitespace characters.", nameof(domain));
+                throw new ArgumentException("Domain cannot be empty or consist solely of whitespace characters.", nameof(domain));
 
             if (username.Trim() == string.Empty)
                 throw new ArgumentException("Username cannot be empty or consist solely of whitespace characters.", nameof(username));
