@@ -110,9 +110,14 @@ namespace SimpleImpersonation
 
         internal SafeAccessTokenHandle Impersonate(LogonType logonType)
         {
+            return Impersonate(logonType, LogonProvider.Default);
+        }
+        
+        internal SafeAccessTokenHandle Impersonate(LogonType logonType, LogonProvider logonProvider)
+        {
             if (_securePassword == null)
             {
-                if (!NativeMethods.LogonUser(_username, _domain, _password, (int)logonType, 0, out var tokenHandle))
+                if (!NativeMethods.LogonUser(_username, _domain, _password, (int)logonType, (int)logonProvider, out var tokenHandle))
                     HandleError(tokenHandle);
 
                 return new SafeAccessTokenHandle(tokenHandle);
@@ -122,7 +127,7 @@ namespace SimpleImpersonation
 
             try
             {
-                if (!NativeMethods.LogonUser(_username, _domain, passPtr, (int)logonType, 0, out var tokenHandle))
+                if (!NativeMethods.LogonUser(_username, _domain, passPtr, (int)logonType, (int)logonProvider, out var tokenHandle))
                     HandleError(tokenHandle);
 
                 return new SafeAccessTokenHandle(tokenHandle);
