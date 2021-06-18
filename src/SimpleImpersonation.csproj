@@ -8,10 +8,12 @@
     <PackageTags>impersonation user password domain logonuser win32</PackageTags>
     <PackageProjectUrl>https://github.com/mattjohnsonpint/SimpleImpersonation</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/mattjohnsonpint/SimpleImpersonation/master/LICENSE.txt</PackageLicenseUrl>
-	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <Version>3.0.0</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SimpleImpersonationKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
