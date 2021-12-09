@@ -18,7 +18,7 @@ namespace SimpleImpersonation.UnitTests
 
         public UserPrincipalFixture()
         {
-            Username = "Test" + DateTime.Now.ToString("yyyyMMdd'T'HHmmss");
+            Username = "Test" + DateTime.Now.ToString("HHmmssffffff");
             Password = Guid.NewGuid().ToString();
 
             var ss = new SecureString();
