@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>A tiny library that lets you impersonate any user, by acting as a managed wrapper for the LogonUser Win32 function.</Description>
     <Authors>Matt Johnson</Authors>
-    <TargetFrameworks>netstandard20;net46;net45;net40;net35;net20</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>SimpleImpersonation</PackageId>
     <PackageTags>impersonation user password domain logonuser win32</PackageTags>
     <PackageProjectUrl>https://github.com/mattjohnsonpint/SimpleImpersonation</PackageProjectUrl>
