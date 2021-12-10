@@ -48,7 +48,7 @@ var result = Impersonation.RunAsUser(credentials, logonType, () =>
 
 A few notes:
 
-- **Don't use impersonation with asynchronous code.  See [#32](https://github.com/mj1856/SimpleImpersonation/issues/32) for details about why.**
+- **Don't use impersonation with asynchronous code.  See [#32](https://github.com/mattjohnsonpint/SimpleImpersonation/issues/32) for details about why.**
 
 - The `domain` parameter can optionally be omitted, in which case the `username` can contain the domain in either `domain\user` or `user@domain` format.
 
