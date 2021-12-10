@@ -2,7 +2,7 @@
 using System.Security.Principal;
 using Microsoft.Win32.SafeHandles;
 
-#if !NETSTANDARD
+#if NETFRAMEWORK
 using System.Security.Permissions;
 #endif
 
@@ -11,7 +11,7 @@ namespace SimpleImpersonation
     /// <summary>
     /// Provides ability to run code within the context of a specific user.
     /// </summary>
-#if !NETSTANDARD
+#if NETFRAMEWORK
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
 #endif
     public static class Impersonation
@@ -26,7 +26,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                RunImpersonated(tokenHandle, _ => action());
+                WindowsIdentity.RunImpersonated(tokenHandle, action);
             }
         }
 
@@ -41,7 +41,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType, logonProvider))
             {
-                RunImpersonated(tokenHandle, _ => action());
+                WindowsIdentity.RunImpersonated(tokenHandle, action);
             }
         }
 
@@ -55,7 +55,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                RunImpersonated(tokenHandle, action);
+                WindowsIdentity.RunImpersonated(tokenHandle, () => action(tokenHandle));
             }
         }
 
@@ -70,7 +70,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType, logonProvider))
             {
-                RunImpersonated(tokenHandle, action);
+                WindowsIdentity.RunImpersonated(tokenHandle, () => action(tokenHandle));
             }
         }
 
@@ -86,7 +86,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                return RunImpersonated(tokenHandle, _ => function());
+                return WindowsIdentity.RunImpersonated(tokenHandle, function);
             }
         }
 
@@ -103,7 +103,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType, logonProvider))
             {
-                return RunImpersonated(tokenHandle, _ => function());
+                return WindowsIdentity.RunImpersonated(tokenHandle, function);
             }
         }
 
@@ -119,7 +119,7 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType))
             {
-                return RunImpersonated(tokenHandle, function);
+                return WindowsIdentity.RunImpersonated(tokenHandle, () => function(tokenHandle));
             }
         }
 
@@ -136,32 +136,8 @@ namespace SimpleImpersonation
         {
             using (var tokenHandle = credentials.Impersonate(logonType, logonProvider))
             {
-                return RunImpersonated(tokenHandle, function);
+                return WindowsIdentity.RunImpersonated(tokenHandle, () => function(tokenHandle));
             }
-        }
-
-        private static void RunImpersonated(SafeAccessTokenHandle tokenHandle, Action<SafeAccessTokenHandle> action)
-        {
-#if NETSTANDARD || NET46
-            WindowsIdentity.RunImpersonated(tokenHandle, () => action(tokenHandle));
-#else
-            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
-            {
-                action(tokenHandle);
-            }
-#endif
-        }
-
-        private static T RunImpersonated<T>(SafeAccessTokenHandle tokenHandle, Func<SafeAccessTokenHandle, T> function)
-        {
-#if NETSTANDARD || NET46
-            return WindowsIdentity.RunImpersonated(tokenHandle, () => function(tokenHandle));
-#else
-            using (var context = WindowsIdentity.Impersonate(tokenHandle.DangerousGetHandle()))
-            {
-                return function(tokenHandle);
-            }
-#endif
         }
     }
 }
