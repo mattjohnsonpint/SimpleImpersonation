@@ -13,42 +13,63 @@ It achives this using the [LogonUser](http://msdn.microsoft.com/en-us/library/wi
 PM> Install-Package SimpleImpersonation
 ```
 
-This library is multi-targeted, and should work well with all of the following:
-  - .NET Framework 2.0, 3.5, 4.0, 4.5, 4.6, and greater
-  - Any implementation of .NET Standard 2.0, including .NET Core 2.0 or greater
+As of version 4.0.0, this library targets .NET Standard 2.0 only.  It should work well with all of the following:
+  - .NET 5 or greater
+  - .NET Core 2.0 or greater
+  - .NET Framework 4.6.1 and greater
+
+Note that .NET Framework versions less than 4.6.1 are no longer supported.
 
 ## Platform Support
 
-Since this library relies on Windows APIs, it is Windows only.
-
-(Linux and Mac support would be gladly accepted as pull requests from an ambitious contributor!)
+Since this library relies on Windows APIs, it is supported on Windows only.
 
 ## Usage
 
-*Note this API is new for version 3.0.0 and varies significantly from previous versions.*
+As of version 4.0.0, the prefered approach is to get a `SafeAccessTokenHandle` for the credentials by calling `LogonUser` from a `UserCredentials` instance.
 
 ```csharp
-var credentials = new UserCredentials(domain, username, password);
-Impersonation.RunAsUser(credentials, logonType, () =>
-{
-    // do whatever you want as this user.
-}); 
+UserCredentials credentials = new UserCredentials(domain, username, password);
+using SafeAccessTokenHandle userHandle = credentials.LogonUser(LogonType.Interactive);  // or another LogonType
 ```
 
+You can then use that handle with built-in .NET functions such
+as `WindowsIdentity.RunImpersonated` or `WindowsIdentity.RunImpersonatedAsync`.
+
+After you have the token handle, you can use it with the built-in .NET functions such as `WindowsIdentity.RunImpersonated` or `WindowsIdentity.RunImpersonatedAsync`.
+
+```csharp
+WindowsIdentity.RunImpersonated(userHandle, () => {
+    // do whatever you want as this user.
+});
+```
 or
 
 ```csharp
-var credentials = new UserCredentials(domain, username, password);
-var result = Impersonation.RunAsUser(credentials, logonType, () =>
-{
+var someResult = WindowsIdentity.RunImpersonated(userHandle, () => {
     // do whatever you want as this user.
-    return something;
-}); 
+    return someResult;
+});
+```
+or
+
+```csharp
+await WindowsIdentity.RunImpersonatedAsync (userHandle, async () => {
+    // do whatever you want as this user.
+});
+```
+or
+
+```csharp
+var someResult = await WindowsIdentity.RunImpersonatedAsync(userHandle, async () => {
+    // do whatever you want as this user.
+    return someResult;
+});
 ```
 
-A few notes:
+## Usage Notes
 
-- **Don't use impersonation with asynchronous code.  See [#32](https://github.com/mattjohnsonpint/SimpleImpersonation/issues/32) for details about why.**
+- The previous `Impersonation.RunAsUser` method has been deprecated.  Instead, please obtain a user handle and use the built-in functions as shown above.
 
 - The `domain` parameter can optionally be omitted, in which case the `username` can contain the domain in either `domain\user` or `user@domain` format.
 
@@ -74,8 +95,6 @@ A few notes:
   - `ErrorCode` : The `HResult` of the error.
   - `InnerException` : A `Win32Exception` used to derive the other properties.
 
-- If you need access to the handle of the user being impersonated, you can gain access to it as an argument to the action or function delegate.  Ex:  `(tokenHandle) => { ... }`
-
 Testing
 -------
 
@@ -83,32 +102,3 @@ In order to verify that this library can impersonate a user, the unit tests will
 and then delete the account when the test run is complete.  To achieve this, the tests must be run as an elevated "administrator" account.
 
 You can "run as administrator" on a command prompt window and run `dotnet test` on the test project, or you can launch Visual Studio as an administrator and execute the tests from there.
-
-Changelog
----------
-
-1.0.0
-
- - Initial Version
-
-1.0.1
-
- - Issue #2 - Fixes possible "SafeHandle cannot be null"
-
-1.1.0
-
- - Issue #9 - Adds support for passing the password as a `SecureString`
-
-2.0.0
-
-- Issue #14 - Throws a more useful exception.  (This is a breaking change if you were previously parsing the error code out of the message string).
-
-2.0.1
-
-- Issue #17 - Adds the `NativeError` code to the exception.
-
-3.0.0
-
-- Major changes to the API.  The `LogonUser` method and `IDisposable` pattern are deprecated, in favor of `RunAsUser` that takes an action or function delegate.
-- Uses the built-in `WindowsIdentity.RunImpersonated` and `SafeAccessTokenHandle` APIs in .NET Framework 4.6+ and where available.
-- .NET Standard 2.0 support
