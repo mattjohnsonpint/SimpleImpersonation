@@ -24,31 +24,12 @@ namespace SimpleImpersonation.UnitTests
             var userNameBefore = WindowsIdentity.GetCurrent().Name;
 
             var credentials = new UserCredentials(_fixture.Username, _fixture.Password);
-
-            var userNameDuring = Impersonation.RunAsUser(credentials, LogonType.Interactive,
-                () => WindowsIdentity.GetCurrent().Name);
-
+            using var userHandle = credentials.LogonUser(LogonType.Interactive);
+            var userNameDuring = WindowsIdentity.RunImpersonated(userHandle, () => WindowsIdentity.GetCurrent().Name);
             var userNameAfter = WindowsIdentity.GetCurrent().Name;
 
             Assert.Equal(userNameBefore, userNameAfter);
             Assert.Equal(_fixture.FullUsername, userNameDuring);
-        }
-
-        [Fact]
-        public void Impersonate_RunAsUser_PlainPassword_FunctionWithTokenHandle()
-        {
-            var userNameBefore = WindowsIdentity.GetCurrent().Name;
-
-            var credentials = new UserCredentials(_fixture.Username, _fixture.Password);
-
-            var (userNameDuring, tokenIsValid) = Impersonation.RunAsUser(credentials, LogonType.Interactive,
-                tokenHandle => (WindowsIdentity.GetCurrent().Name, !tokenHandle.IsInvalid));
-
-            var userNameAfter = WindowsIdentity.GetCurrent().Name;
-
-            Assert.Equal(userNameBefore, userNameAfter);
-            Assert.Equal(_fixture.FullUsername, userNameDuring);
-            Assert.True(tokenIsValid);
         }
 
         [Fact]
@@ -57,9 +38,10 @@ namespace SimpleImpersonation.UnitTests
             var userNameBefore = WindowsIdentity.GetCurrent().Name;
 
             var credentials = new UserCredentials(_fixture.Username, _fixture.Password);
+            using var userHandle = credentials.LogonUser(LogonType.Interactive);
 
             string userNameDuring = null;
-            Impersonation.RunAsUser(credentials, LogonType.Interactive,
+            WindowsIdentity.RunImpersonated(userHandle,
                 () => { userNameDuring = WindowsIdentity.GetCurrent().Name; });
 
             var userNameAfter = WindowsIdentity.GetCurrent().Name;
@@ -69,36 +51,14 @@ namespace SimpleImpersonation.UnitTests
         }
 
         [Fact]
-        public void Impersonate_RunAsUser_PlainPassword_ActionWithTokenHandle()
-        {
-            var userNameBefore = WindowsIdentity.GetCurrent().Name;
-
-            var credentials = new UserCredentials(_fixture.Username, _fixture.Password);
-
-            bool tokenIsValid = false;
-            string userNameDuring = null;
-            Impersonation.RunAsUser(credentials, LogonType.Interactive,
-                tokenHandle =>
-                {
-                    userNameDuring = WindowsIdentity.GetCurrent().Name;
-                    tokenIsValid = !tokenHandle.IsInvalid;
-                });
-
-            var userNameAfter = WindowsIdentity.GetCurrent().Name;
-
-            Assert.Equal(userNameBefore, userNameAfter);
-            Assert.Equal(_fixture.FullUsername, userNameDuring);
-            Assert.True(tokenIsValid);
-        }
-
-        [Fact]
         public void Impersonate_RunAsUser_SecurePassword_Function()
         {
             var userNameBefore = WindowsIdentity.GetCurrent().Name;
 
             var credentials = new UserCredentials(_fixture.Username, _fixture.PasswordAsSecureString);
+            using var userHandle = credentials.LogonUser(LogonType.Interactive);
 
-            var userNameDuring = Impersonation.RunAsUser(credentials, LogonType.Interactive,
+            var userNameDuring = WindowsIdentity.RunImpersonated(userHandle,
                 () => WindowsIdentity.GetCurrent().Name);
 
             var userNameAfter = WindowsIdentity.GetCurrent().Name;
@@ -108,60 +68,21 @@ namespace SimpleImpersonation.UnitTests
         }
 
         [Fact]
-        public void Impersonate_RunAsUser_SecurePassword_FunctionWithTokenHandle()
-        {
-            var userNameBefore = WindowsIdentity.GetCurrent().Name;
-
-            var credentials = new UserCredentials(_fixture.Username, _fixture.PasswordAsSecureString);
-
-            var (userNameDuring, tokenIsValid) = Impersonation.RunAsUser(credentials, LogonType.Interactive,
-                tokenHandle => (WindowsIdentity.GetCurrent().Name, !tokenHandle.IsInvalid));
-
-            var userNameAfter = WindowsIdentity.GetCurrent().Name;
-
-            Assert.Equal(userNameBefore, userNameAfter);
-            Assert.Equal(_fixture.FullUsername, userNameDuring);
-            Assert.True(tokenIsValid);
-        }
-
-        [Fact]
         public void Impersonate_RunAsUser_SecurePassword_Action()
         {
             var userNameBefore = WindowsIdentity.GetCurrent().Name;
 
             var credentials = new UserCredentials(_fixture.Username, _fixture.PasswordAsSecureString);
+            using var userHandle = credentials.LogonUser(LogonType.Interactive);
 
             string userNameDuring = null;
-            Impersonation.RunAsUser(credentials, LogonType.Interactive,
+            WindowsIdentity.RunImpersonated(userHandle,
                 () => { userNameDuring = WindowsIdentity.GetCurrent().Name; });
 
             var userNameAfter = WindowsIdentity.GetCurrent().Name;
 
             Assert.Equal(userNameBefore, userNameAfter);
             Assert.Equal(_fixture.FullUsername, userNameDuring);
-        }
-
-        [Fact]
-        public void Impersonate_RunAsUser_SecurePassword_ActionWithTokenHandle()
-        {
-            var userNameBefore = WindowsIdentity.GetCurrent().Name;
-
-            var credentials = new UserCredentials(_fixture.Username, _fixture.PasswordAsSecureString);
-
-            bool tokenIsValid = false;
-            string userNameDuring = null;
-            Impersonation.RunAsUser(credentials, LogonType.Interactive,
-                tokenHandle =>
-                {
-                    userNameDuring = WindowsIdentity.GetCurrent().Name;
-                    tokenIsValid = !tokenHandle.IsInvalid;
-                });
-
-            var userNameAfter = WindowsIdentity.GetCurrent().Name;
-
-            Assert.Equal(userNameBefore, userNameAfter);
-            Assert.Equal(_fixture.FullUsername, userNameDuring);
-            Assert.True(tokenIsValid);
         }
 
         [Fact]
@@ -179,7 +100,8 @@ namespace SimpleImpersonation.UnitTests
 
                 await Task.Delay(rnd.Next(5, 100));
 
-                var name2 = await Impersonation.RunAsUser(credentials, LogonType.Interactive,
+                using var userHandle = credentials.LogonUser(LogonType.Interactive);
+                var name2 = await WindowsIdentity.RunImpersonated(userHandle,
                     async () =>
                     {
                         await Task.Delay(rnd.Next(5, 100));

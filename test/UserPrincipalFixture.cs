@@ -1,6 +1,7 @@
 using System;
 using System.DirectoryServices.AccountManagement;
 using System.Security;
+using System.Security.Principal;
 
 namespace SimpleImpersonation.UnitTests
 {
@@ -18,6 +19,11 @@ namespace SimpleImpersonation.UnitTests
 
         public UserPrincipalFixture()
         {
+            if (!IsAdministrator())
+            {
+                throw new Exception("These tests must be run as an administrator.");
+            }
+
             Username = "Test" + DateTime.Now.ToString("HHmmssffffff");
             Password = Guid.NewGuid().ToString();
 
@@ -41,6 +47,13 @@ namespace SimpleImpersonation.UnitTests
             _context.Dispose();
             PasswordAsSecureString.Dispose();
             _disposed = true;
+        }
+
+        private static bool IsAdministrator()
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
 }
