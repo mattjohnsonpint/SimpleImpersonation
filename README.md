@@ -54,7 +54,7 @@ or
 ```csharp
 var someResult = WindowsIdentity.RunImpersonated(userHandle, () => {
     // do whatever you want as this user.
-    return someResult;
+    return something;
 });
 ```
 or
@@ -69,7 +69,7 @@ or
 ```csharp
 var someResult = await WindowsIdentity.RunImpersonatedAsync(userHandle, async () => {
     // do whatever you want as this user.
-    return someResult;
+    return something;
 });
 ```
 
