@@ -28,6 +28,14 @@ Since this library relies on Windows APIs, it is supported on Windows only.
 
 As of version 4.0.0, the prefered approach is to get a `SafeAccessTokenHandle` for the credentials by calling `LogonUser` from a `UserCredentials` instance.
 
+You'll first want to import these namespaces:
+```csharp
+using System.Security.Principal;
+using Microsoft.Win32.SafeHandles;
+using SimpleImpersonation;
+```
+
+Then you can get a handle fore the user using this library.
 ```csharp
 UserCredentials credentials = new UserCredentials(domain, username, password);
 using SafeAccessTokenHandle userHandle = credentials.LogonUser(LogonType.Interactive);  // or another LogonType
