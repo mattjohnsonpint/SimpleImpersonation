@@ -34,9 +34,7 @@ using SafeAccessTokenHandle userHandle = credentials.LogonUser(LogonType.Interac
 ```
 
 You can then use that handle with built-in .NET functions such
-as `WindowsIdentity.RunImpersonated` or `WindowsIdentity.RunImpersonatedAsync`.
-
-After you have the token handle, you can use it with the built-in .NET functions such as `WindowsIdentity.RunImpersonated` or `WindowsIdentity.RunImpersonatedAsync`.
+as [`WindowsIdentity.RunImpersonated`](https://docs.microsoft.com/dotnet/api/system.security.principal.windowsidentity.runimpersonated) or [`WindowsIdentity.RunImpersonatedAsync`](https://docs.microsoft.com/dotnet/api/system.security.principal.windowsidentity.runimpersonatedasync). 
 
 ```csharp
 WindowsIdentity.RunImpersonated(userHandle, () => {
