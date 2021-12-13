@@ -35,7 +35,7 @@ using Microsoft.Win32.SafeHandles;
 using SimpleImpersonation;
 ```
 
-Then you can get a handle fore the user using this library.
+Then you can get a handle for the user using this library.
 ```csharp
 UserCredentials credentials = new UserCredentials(domain, username, password);
 using SafeAccessTokenHandle userHandle = credentials.LogonUser(LogonType.Interactive);  // or another LogonType
