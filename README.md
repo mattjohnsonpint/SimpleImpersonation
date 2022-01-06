@@ -13,7 +13,7 @@ It achives this using the [LogonUser](http://msdn.microsoft.com/en-us/library/wi
 PM> Install-Package SimpleImpersonation
 ```
 
-As of version 4.0.0, this library targets .NET Standard 2.0 only.  It should work well with all of the following:
+As of version 4.0.0, this library should work well with all of the following:
   - .NET 5 or greater
   - .NET Core 2.0 or greater
   - .NET Framework 4.6.1 and greater
