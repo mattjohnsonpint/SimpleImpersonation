@@ -101,7 +101,11 @@ namespace SimpleImpersonation.UnitTests
                 await Task.Delay(rnd.Next(5, 100));
 
                 using var userHandle = credentials.LogonUser(LogonType.Interactive);
+#if NETFRAMEWORK
                 var name2 = await WindowsIdentity.RunImpersonated(userHandle,
+#else
+                var name2 = await WindowsIdentity.RunImpersonatedAsync(userHandle,
+#endif
                     async () =>
                     {
                         await Task.Delay(rnd.Next(5, 100));

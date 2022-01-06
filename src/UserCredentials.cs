@@ -5,10 +5,6 @@ using System.Security;
 using System.Security.Principal;
 using Microsoft.Win32.SafeHandles;
 
-#if NETFRAMEWORK
-using System.Security.Permissions;
-#endif
-
 namespace SimpleImpersonation
 {
     /// <summary>
@@ -113,6 +109,21 @@ namespace SimpleImpersonation
             _password = string.Empty;
         }
 
+#if NETFRAMEWORK
+        /// <summary>
+        /// Invokes the Win32 <a href="https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-logonusera">LogonUser</a>
+        /// API to log on with the credentials specified in the creation of this object.
+        /// The result is a <see cref="SafeAccessTokenHandle"/> which can subsequently be used with methods such as 
+        /// <see cref="WindowsIdentity.RunImpersonated"/>.
+        /// The handle should be used with a <c>using</c> block or statement, to log out the user when done.
+        /// </summary>
+        /// <param name="logonType">
+        /// The Windows logon type.  Typically <see cref="LogonType.NewCredentials"/> for simple network access,
+        /// or <see cref="LogonType.Interactive"/> for full logon in desktop applications.
+        /// </param>
+        /// <param name="logonProvider">The Windows logon provider.  Leave as default if uncertain.</param>
+        /// <returns>A <see cref="SafeAccessTokenHandle"/> for the newly logged in user.</returns>
+#else
         /// <summary>
         /// Invokes the Win32 <a href="https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-logonusera">LogonUser</a>
         /// API to log on with the credentials specified in the creation of this object.
@@ -126,6 +137,7 @@ namespace SimpleImpersonation
         /// </param>
         /// <param name="logonProvider">The Windows logon provider.  Leave as default if uncertain.</param>
         /// <returns>A <see cref="SafeAccessTokenHandle"/> for the newly logged in user.</returns>
+#endif
         public SafeAccessTokenHandle LogonUser(LogonType logonType, LogonProvider logonProvider = LogonProvider.Default)
         {
             if (_securePassword == null)
