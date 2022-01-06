@@ -8,7 +8,7 @@
     <PackageTags>impersonation user password domain logonuser win32</PackageTags>
     <PackageProjectUrl>https://github.com/mattjohnsonpint/SimpleImpersonation</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>4.1.0</Version>
+    <Version>4.2.0</Version>
   </PropertyGroup>
 
   <PropertyGroup>
