@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Principal;
@@ -190,8 +191,23 @@ namespace SimpleImpersonation
             if (domain.IndexOfAny(new[] { '\\', '@' }) != -1)
                 throw new ArgumentException("Domain cannot contain \\ or @ characters.", nameof(domain));
 
-            if (username.IndexOfAny(new[] { '\\', '@' }) != -1)
-                throw new ArgumentException("Username cannot contain \\ or @ characters when domain is provided separately.", nameof(username));
+            if (string.Equals(domain, "AzureAD", StringComparison.OrdinalIgnoreCase))
+            {
+                if (username.IndexOf('\\') != -1)
+                    throw new ArgumentException("Username cannot contain \\ when the domain is AzureAD.", nameof(username));
+
+                int i = username.IndexOf('@');
+                if (i == -1)
+                    throw new ArgumentException("Username must contain @ when the domain is AzureAD.", nameof(username));
+                    
+                if (username.IndexOf('@', i+1) != -1)
+                    throw new ArgumentException("Username cannot contain more than one @ when the domain is AzureAD.", nameof(username));
+            }
+            else
+            {
+                if (username.IndexOfAny(new[] { '\\', '@' }) != -1)
+                    throw new ArgumentException("Username cannot contain \\ or @ characters when domain is provided separately.", nameof(username));
+            }
         }
 
         private static void ValidateUserWithoutDomain(string username)
@@ -202,10 +218,27 @@ namespace SimpleImpersonation
             if (username.Trim() == string.Empty)
                 throw new ArgumentException("Username cannot be empty or consist solely of whitespace characters.", nameof(username));
 
+            char[] validSeparators;
+            if (username.StartsWith(@"AzureAD\", StringComparison.OrdinalIgnoreCase))
+            {
+                username = username.Substring(8);
+                if (username.IndexOf('@') == -1)
+                    throw new ArgumentException("Username must contain @ when the domain is AzureAD.", nameof(username));
+
+                if (username.IndexOf('\\') != -1)
+                    throw new ArgumentException("Username cannot contain another \\ when the domain is AzureAD.", nameof(username));
+
+                validSeparators = new[] { '@' };
+            }
+            else
+            {
+                validSeparators = new[] { '@', '\\' };
+            }
+
             int separatorCount = 0;
             foreach (var c in username)
             {
-                if (c == '\\' || c == '@')
+                if (validSeparators.Contains(c))
                     separatorCount++;
             }
 
@@ -213,7 +246,7 @@ namespace SimpleImpersonation
                 return;
 
             if (separatorCount > 1)
-                throw new ArgumentException("Username cannot contain more than one \\ or @ character.", nameof(username));
+                throw new ArgumentException("Username cannot contain more than one separator.", nameof(username));
 
             var firstChar = username[0];
             var lastChar = username[username.Length - 1];
@@ -258,7 +291,7 @@ namespace SimpleImpersonation
         /// <inheritdoc />
         public override string ToString()
         {
-            return _domain == null ? _username : _username + "@" + _domain;
+            return _domain == null ? _username : _username.IndexOf('@') != -1 ? $@"{_domain}\{_username}" : $"{_username}@{_domain}";
         }
     }
 }

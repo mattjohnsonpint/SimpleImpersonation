@@ -266,6 +266,56 @@ namespace SimpleImpersonation.UnitTests
             Assert.Equal("LOCAL SERVICE@NT AUTHORITY", UserCredentials.LocalService.ToString(), ignoreCase: true);
         }
 
+        [Fact]
+        public void UserCredentials_Constructor_Valid_AzureAD_1()
+        {
+            var creds = new UserCredentials(@"AzureAD\user@domain", "password");
+            Assert.Equal(@"AzureAD\user@domain", creds.ToString());
+        }
+
+        [Fact]
+        public void UserCredentials_Constructor_Valid_AzureAD_2()
+        {
+            var creds = new UserCredentials("AzureAD", "user@domain", "password");
+            Assert.Equal(@"AzureAD\user@domain", creds.ToString());
+        }
+
+        [Fact]
+        public void UserCredentials_Constructor_Invalid_AzureAD_1()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var _ = new UserCredentials(@"AzureAD\user", "password");
+            });
+        }
+
+        [Fact]
+        public void UserCredentials_Constructor_Invalid_AzureAD_2()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var _ = new UserCredentials("AzureAD", "user", "password");
+            });
+        }
+
+        [Fact]
+        public void UserCredentials_Constructor_Invalid_AzureAD_3()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var _ = new UserCredentials("AzureAD", @"domain\user", "password");
+            });
+        }
+
+        [Fact]
+        public void UserCredentials_Constructor_Invalid_AzureAD_4()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var _ = new UserCredentials("AzureAD", "user@foo@bar", "password");
+            });
+        }
+
         private static SecureString CreateSecureStringPasswordForTesting()
         {
             // Note: This is obviously not really a secure password.  We just need something to test the API with.
