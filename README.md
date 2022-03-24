@@ -5,7 +5,11 @@ Simple Impersonation Library for .Net
 
 This library allows you to run code as another Windows user, as long as you have their credentials.
 
-It achives this using the [LogonUser](http://msdn.microsoft.com/en-us/library/windows/desktop/aa378184.aspx) Windows API, and thus can only provide the functionality provided by that API.
+It achives this using the [LogonUser](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-logonusera) Windows API, and thus can only provide the functionality provided by that API.  In particular, pay attention to the following from the docs:
+
+> The `LogonUser` function attempts to log a user on to the local computer. The local computer is the computer from which `LogonUser` was called. You cannot use `LogonUser` to log on to a remote computer.
+
+Thus, SimpleImpersonation will not help you authenticate on a remote computer.  If you want to use alternate credentials to *connect* to a remote computer, then the local computer and the remote computer must already be attached to the same domain, or there needs to be a trust relationship established between those domains.  If either the local computer or remote computer are domainless, you will not be able to use this library to connect to resources on the remote computer.
 
 ## Installation
 
@@ -90,14 +94,14 @@ var someResult = await WindowsIdentity.RunImpersonatedAsync(userHandle, async ()
   - If you are trying to connect to a SQL server with trusted authentication using specific credentials, use `LogonType.NewCredentials`.
     - But be aware that impersonation is not taken into account in connection pooling.
     - You will also need to vary your connection string.
-    - Read more [here](http://stackoverflow.com/q/18198291/634824)
+    - Read more [here](https://stackoverflow.com/q/18198291/634824)
 
-  See the [MSDN documentation](http://msdn.microsoft.com/library/windows/desktop/aa378184.aspx) for additional logon types.
+  See the [MSDN documentation](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-logonusera#parameters) for additional logon types.
 
 
 - If impersonation fails, it will throw a custom `ImpersonationException`, which has the following properties:
   - `Message` : The string message describing the error.  
-  - `NativeErrorCode` : The native Windows error code, as described [here](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381.aspx).
+  - `NativeErrorCode` : The native Windows error code, as described [here](https://docs.microsoft.com/windows/win32/debug/system-error-codes).
   - `ErrorCode` : The `HResult` of the error.
   - `InnerException` : A `Win32Exception` used to derive the other properties.
 
